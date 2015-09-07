@@ -1,0 +1,9 @@
+#!/bin/bash
+#SBATCH -J pi_mpi        # Job Name
+#SBATCH -o pi_mpi.o%j    # Output and error file name (%j expands to jobID)
+#SBATCH -n 64            # Total number of mpi tasks requested
+#SBATCH -p normal        # Queue (partition) name -- normal, development, etc.
+#SBATCH -t 00:05:00      # Run time (hh:mm:ss) - 5 minutes
+#SBATCH -A TG-CCR150026
+
+ibrun ./pi 100000

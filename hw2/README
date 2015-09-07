@@ -1,0 +1,19 @@
+This is a simple "hello-world" example to parallel programming meant
+to introduce the student to how to execute a program in a
+supercomputer environment.
+
+This is a simple program to determine the value of pi. The algorithm
+suggested here is chosen for its simplicity. The method evaluates the
+integral of 4/(1+x*x) between 0 and 1. The method is simple: the
+integral is approximated by a sum of n intervals; the approximation to
+the integral in each interval is (1/n)*4/(1+x*x). The master process
+determines the number of intervals by looking at the first sysarg (cli
+args); the master then broadcasts this number to all of the
+other processes. Each process then adds up every n'th interval (x =
+rank/n, rank/n+size/n,...). Finally, the sums computed by each process
+are added together using a reduction.
+
+The original source for this program is part of an MPI tutorial found
+at: www.mcs.anl.gov
+
+Special thanks to Esteban Meneses, PhD.

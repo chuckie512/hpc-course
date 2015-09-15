@@ -2,7 +2,7 @@
  * University of Pittsburgh
  * Department of Computer Science
  * CS1645: Introduction to HPC Systems
- * Instructor Esteban Meneses, PhD (emeneses@pitt.edu)
+ * Instructor Bryan Mills, PhD
  * Original Code Esteban Meneses
  * Input/output operations for matrices.
  */

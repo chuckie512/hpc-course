@@ -48,13 +48,19 @@ int main(int argc, char* argv[]) {
     B[i] = new int[N];
     C[i] = new int[N];
   }
+  // Init C to all zeros.
+  for (int i=0; i<N; i++) {
+    for (int j=0; j<N; j++) {
+      C[i][j] = 0;
+    }
+  }
 
   // reading files (optional)
   if(argc == 4){
     readMatrixFile(A,N,argv[2]);
     readMatrixFile(B,N,argv[3]);
   } else {
-    // Otherwise, generate random matrix.
+    // Otherwise, generate two random matrix.
     std::srand(std::time(0));
     for (int i=0; i<N; i++) {
       for (int j=0; j<N; j++) {
@@ -72,12 +78,10 @@ int main(int argc, char* argv[]) {
   timerStart();
 
   // YOUR CODE GOES HERE
+  stupidMM(N, A, B, C);
 
-  // testing the results is correct
-  if(argc == 4){
-    cout << "------- MATRIX C" << std::endl;
-    printMatrix(C,N);
-  }
+  cout << "------- MATRIX C" << std::endl;
+  printMatrix(C,N);
   
   // stopping timer
   elapsedTime = timerStop();

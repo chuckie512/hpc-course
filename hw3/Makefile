@@ -1,5 +1,5 @@
 all:
-	icpc strassen.cpp -o strassen -lpthread
+	icpc strassen.c -o strassen -lpthread
 
 clean:
 	rm -f strassen

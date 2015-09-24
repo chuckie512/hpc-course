@@ -1,0 +1,40 @@
+\documentclass [11pt]{article}
+
+\title{1645 HW03}
+\author{Charles Smith\\
+		cas275@pitt.edu}
+
+\begin{document}
+
+
+\maketitle
+\section{3D mesh w/ wraparound}
+ determine the shortest path on the x axis by finding if the wrap around should be used or not (the shortest of $abs(dest-start)$ vs. $n- abs(dest-start)$ )
+\\move along the selected path.
+\\This is then repeated the same way for the y and z axes
+\section{cars on an assembly line}
+\subsection{1 car}
+One care on the mentioned assembly line would take $12*5$ minutes to be completed.  This is because it must spend 5 minutes at each of the 12 stations.
+\subsection{10 cars}
+10 cars would not spend $10*12*5$ minutes on the line because once one car leaves a station, the next can take its place. this means that they only take $(12+9)*5$ minutes to complete
+\subsection{n cars}
+To generalize this, n cars would take $(12+(n-1))*5$ minutes to complete, for any positive n.
+\section{Vector}
+
+\section{2d mesh}
+\subsection{mapping a torus}
+The 2d torus mapped onto a 2d mesh would look like the 2d mesh, except the warp-around would be mapped to the current paths traversing across the columns and rows.
+\subsubsection{The congestion}
+In this mapping the congestion would be 2.  As the most edges mapped to a single edge is 2.  
+\subsubsection{The dilation}
+In this case the dilation is N, as when the mapped wrap around is used, the message must traverse across N nodes.
+\subsection{a smaller torus}
+Their are many ways of mapping a N/2 x N/2 torus onto a NxN 2d mesh.  one of which is evenly spacing the nodes apart, connecting the nodes directly across from each other through the empty node, and making the wrap around go around the nodes being used and using the empty nodes.  Unfortunately even using this method yields less than ideal results.  Their is high dilation as the nodes are spaced apart, and there still needs to be overlapping edges.  
+\section{message time}
+$T=I+n/b$\\
+$100MB/s=0.1B/ns$\\
+$T=500+256/.1$\\
+$T=3060ns=3.06 x 10^{-6}s$
+
+
+\end{document}

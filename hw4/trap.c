@@ -3,13 +3,13 @@
  * Department of Computer Science
  * CS1645: Introduction to HPC Systems
  * Instructor Bryan Mills, PhD
- * Student: 
+ * Student: Charles Smith 
  * Implement Pthreads version of trapezoidal approximation.
  */
 
 #include <stdio.h>
 #include "timer.h"
-
+#include <omp.h>
 // Global variables to make coverting to pthreads easier :)
 double a;
 double b;
@@ -31,8 +31,13 @@ double f(double a) {
 void trap() {
   double h = (b-a) / n;
   approx = ( f(a) - f(b) ) / 2.0;
+  //printf("num threads: %d\n", omp_get_num_threads() ); 
+  int lock = 0;
+#pragma omp parallel for
   for(int i = 1; i < n-1; i++) {
     double x_i = a + i*h;
+    //printf("num threads: %d\n", omp_get_num_threads() );
+#pragma omp critical    
     approx += f(x_i);
   }
   approx = h*approx;
@@ -43,6 +48,7 @@ int main() {
   a = -1.0;
   b = 1.0;
   n = 1000000000;
+  //n=100000;
   timerStart();
   trap();
   printf("Took %ld ms\n", timerStop());
@@ -52,6 +58,7 @@ int main() {
   a = 0.0;
   b = 10.0;
   n = 1000000000;
+  //n=100000;
   timerStart();
   trap();
   printf("Took %ld ms\n", timerStop());

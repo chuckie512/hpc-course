@@ -74,14 +74,12 @@ void conway(int **World, int N, int M){
   // STUDENT: IMPLEMENT THE GAME HERE, make it parallel!
   //  *** This is serial for now ***
   //  *** fix this later         **
-  
-  printf("%d\n\n",num_adjacent(World, N, 0, 9));
-  
+   
   for(int x =0; x< M; x++){     //outer loop, this iterates through the different steps of the game. ** DO NOT PARALLEL **
     for(int i =0; i<N; i++){    //iterates over the rows
       for(int j =0; j<N; j++){  //iterates through the columns
         int count = num_adjacent(World, N, i, j);
-        printf("%d ",count);
+        //printf("%d ",count);
         if     (count < 2) //loneliness
           World[i][j] = 0;
         else if(count > 3) //crowding
@@ -91,7 +89,7 @@ void conway(int **World, int N, int M){
         //else survival
         
       } //end j (column loop)
-      printf("\n");
+      //printf("\n");
     }   //end i (row    loop)
   }     //end x (step   loop)
 }

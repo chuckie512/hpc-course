@@ -10,6 +10,8 @@
 #include "timer.h"
 #include "io.h"
 
+int ** allocMatrix(int N);
+
 /*
  * int **World is the matrix
  * int N is the dimentions
@@ -75,23 +77,40 @@ void conway(int **World, int N, int M){
   //  *** This is serial for now ***
   //  *** fix this later         **
    
+  int **oldWorld = allocMatrix(N);
+  int **newWorld = World;
   for(int x =0; x< M; x++){     //outer loop, this iterates through the different steps of the game. ** DO NOT PARALLEL **
+
+    //alternate which points to what world, so we only keep track of what we're placing in the new world, and what was there before this loop started.
+    int ** temp = oldWorld;
+    oldWorld = newWorld;
+    newWorld = oldWorld;
+      
     for(int i =0; i<N; i++){    //iterates over the rows
       for(int j =0; j<N; j++){  //iterates through the columns
-        int count = num_adjacent(World, N, i, j);
+        int count = num_adjacent(oldWorld, N, i, j);
         //printf("%d ",count);
         if     (count < 2) //loneliness
-          World[i][j] = 0;
+          newWorld[i][j] = 0;
         else if(count > 3) //crowding
-          World[i][j] = 0;
+          newWorld[i][j] = 0;
         else if(count ==3) //reproduction 
-          World[i][j] = 1;
-        //else survival
+          newWorld[i][j] = 1;
+        else //survival
+          newWorld[i][j] = oldWorld[i][j];
         
       } //end j (column loop)
       //printf("\n");
     }   //end i (row    loop)
   }     //end x (step   loop)
+
+ 
+  //copy everything back into world
+  for(int i=0; i<N; i++){
+    for(int j=0; j<N; j++){ 
+      World[i][j]=newWorld[i][j];
+    }
+  }
 }
 
 // Allocate square matrix.

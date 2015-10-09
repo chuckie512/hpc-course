@@ -10,6 +10,8 @@
 #include "timer.h"
 #include "io.h"
 
+#include<omp.h>
+
 int ** allocMatrix(int N);
 
 /*
@@ -85,7 +87,7 @@ void conway(int **World, int N, int M){
     int ** temp = oldWorld;
     oldWorld = newWorld;
     newWorld = oldWorld;
-      
+#pragma omp parallel for shared(newWorld, oldWorld, N)    
     for(int i =0; i<N; i++){    //iterates over the rows
       for(int j =0; j<N; j++){  //iterates through the columns
         int count = num_adjacent(oldWorld, N, i, j);

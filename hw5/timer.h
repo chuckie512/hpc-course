@@ -3,23 +3,26 @@
  * Department of Computer Science
  * CS1645: Introduction to HPC Systems
  * Instructor Bryan Mills, PhD
- * Original Code from Esteban Meneses (coverted to C)
  * Timing operations.
  */
 
+#include <sys/time.h>
 #include <time.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-clock_t start, diff;
+long startTime;
 
 // Starts timer and resets the elapsed time
 void timerStart(){
-  start = clock();
+  struct timeval tod;
+  gettimeofday(&tod, NULL);
+  startTime = tod.tv_sec + (tod.tv_usec * 1.0e-6);
 }
 
-// Stops the timer and returns elapsed time in msec
+// Stops the timer and returns the elapsed time
 long timerStop(){
-  diff = clock() - start;
-  return (diff * 1000) / CLOCKS_PER_SEC;
+  struct timeval tod;
+  gettimeofday(&tod, NULL);
+  return ((tod.tv_sec + (tod.tv_usec * 1.0e-6)) - startTime) * 1000;
 }

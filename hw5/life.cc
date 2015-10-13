@@ -76,8 +76,6 @@ int num_adjacent(int **world, int N, int i, int j){
 // Function implementing Conway's Game of Life
 void conway(int **World, int N, int M){
   // STUDENT: IMPLEMENT THE GAME HERE, make it parallel!
-  //  *** This is serial for now ***
-  //  *** fix this later         **
    
   int **oldWorld = allocMatrix(N);
   int **newWorld = World;

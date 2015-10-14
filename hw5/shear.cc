@@ -3,7 +3,8 @@
  * Department of Computer Science
  * CS1645: Introduction to HPC Systems
  * Instructor Bryan Mills, PhD (bmills@cs.pitt.edu)
- * STUDENTS: Implement OpenMP parallel shear sort.
+ * STUDENTS: CHARLES SMITH
+ * Implement OpenMP parallel shear sort.
  */
 
 #include <omp.h>
@@ -13,9 +14,72 @@
 
 #define MAX_VALUE 10000
 
+//MY STUFF
+
+void sort_row(int **A, int M, int r){ //who doesn't like a nice bubble sort?
+  for(int i =0; i<M; i++){
+    for(int j=0; j<M-1; j++){
+      if(A[r][j]>A[r][j+1]){
+        int temp = A[r][j];
+        A[r][j]=A[r][j+1];
+        A[r][j+1]=temp;
+      }
+    }
+  }
+}
+
+void sort_row_rev(int **A, int M, int r){
+  for(int i =0; i<M; i++){
+    for(int j=0; j<M-1; j++){
+      if(A[r][j]<A[r][j+1]){
+        int temp = A[r][j];
+        A[r][j]=A[r][j+1];
+        A[r][j+1]=temp;
+      }
+    }
+  }
+}
+
+void sort_col(int **A, int M, int c){
+  for(int j=0;j<M;j++){
+    for(int k=0;k<M-1;k++){
+      if(A[k][c]>A[k+1][c]){
+        int temp=A[k][c];
+        A[k][c]=A[k+1][c];
+        A[k+1][c]=temp;
+
+      }
+    }
+  }
+}
+
+
 void shear_sort(int **A, int M) {
   // Students: Implement parallel shear sort here.
+  for(int i=0; i<log(M*M); i++){//outer loop DO NOT PARALLEL 
+
+#pragma parallel for
+    for(int k=0; k<M; k++){
+      if(k%2==0){
+        sort_row(A,M,k);
+      }
+      else{
+        sort_row_rev(A,M,k); 
+      }
+    }  
+
+#pragma parallel for
+    for(int q=0; q<M; q++){
+      sort_col(A,M,q);
+    }
+
+ 
+  } //end outer for
+
 }
+
+//END
+
 
 // Allocate square matrix.
 int **allocMatrix(int size) {

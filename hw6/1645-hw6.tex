@@ -1,0 +1,23 @@
+\documentclass [10pt]{article}
+
+\begin{document}
+\section{ }
+\begin{tabular} {l | c | c | c | r }
+event & p1 & p2 & p3 & MSI\\
+\hline
+start             & L=invalid & L=invalid & L=invalid & null\\
+p1 writes 10 to A & L$<$-A=10 (exclusive) & L=invalid & L=invalid & write miss\\
+p3 writes 2 to B  & L$<$-A=10 (exclusive) & L=invalid & L$<$-B=2 (exclusive) & write miss  \\
+p2 reads A        & L$<$-A=10 (shared) & L$<$A=10 (shared)& L$<$-B=2 (exclusive)  \\
+p3 reads A        & L$<$-A=10 (shared) & L$<$A=10 (shared)  & L$<$-A=10 (shared) \\
+p3 writes 12 to A & L=invalid & L=invalid & L$<$-A=12 (exclusive) \\
+p2 reads A        & L=invalid & L$<$-A=12 (shared) & L$<$-A=12 (shared) \\
+p1 reads B        & L$<$-B=2 (exclusive)  & L$<$-A=12 (shared) & L$<$-A=12 (shared) \\
+p1 writes 10 to B & L$<$-B=10 (exclusive) & L$<$-A=12 (shared) & L$<$-A=12 (shared) \\
+\end{tabular}
+\section { }
+\subsection{a}
+exclusive with R as the owner
+\subsection{b}
+shared by Q and R
+\end{document}

@@ -93,11 +93,7 @@ main(int argc, char** argv){
       globals = (struct Particle *) malloc(n * sizeof(struct Particle));
 
       // YOUR CODE GOES HERE (reading particles from file)
-      for(int i=0; i<size; i++){
-        fscanf(ifp, "%f\t%f\t%f", &globals[i].x, &globals[i].y, &globals[i].mass);
-        globals[i].fx = 0.0;
-        globals[i].fy = 0.0;
-      }
+      read_file(globals,n,argv[2]);
       // END MY CODE
     }
     

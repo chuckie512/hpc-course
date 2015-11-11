@@ -41,9 +41,10 @@ void interact(struct Particle *source, struct Particle *destination);
 void compute_interaction(struct Particle *source, struct Particle *destination, int limit);
 void compute_self_interaction(struct Particle *set, int size);
 void merge(struct Particle *first, struct Particle *second, int limit);
+int read_file(struct Particle *set, int size, char *file_name);
 
 // Main function
-main(int argc, char** argv){
+int main(int argc, char** argv){
   int myRank;// Rank of process
   int p;// Number of processes
   int n;// Number of total particles
@@ -93,6 +94,7 @@ main(int argc, char** argv){
       globals = (struct Particle *) malloc(n * sizeof(struct Particle));
 
       // YOUR CODE GOES HERE (reading particles from file)
+      // this is only performed by (myRank==0) and sets globals so no parallel needed.
       read_file(globals,n,argv[2]);
       // END MY CODE
     }
@@ -117,7 +119,17 @@ main(int argc, char** argv){
     // might consider asyncronous send/recv.
 
     // YOUR CODE GOES HERE (distributing particles among processors)
-    
+    // each proccess gets $number$ particles starting at myRank*number
+    mpi_Scatter( globals,
+                 number * sizeof( struct Particle) / sizeof(float),
+                 MPI_FLOAT,
+                 locals,
+                 number * sizeof(struct Particle) / sizeof(float),
+                 MPI_FLOAT,
+                 0,
+                 MPI_COMM_WORLD);
+                
+    //END MY CODE
   } else {
     // random initialization of local particle array
     for(j = 0; j < number; j++){

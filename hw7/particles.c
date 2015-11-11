@@ -93,10 +93,13 @@ int main(int argc, char** argv){
     if(myRank == 0){
       globals = (struct Particle *) malloc(n * sizeof(struct Particle));
 
+
       // YOUR CODE GOES HERE (reading particles from file)
       // this is only performed by (myRank==0) and sets globals so no parallel needed.
       read_file(globals,n,argv[2]);
       // END MY CODE
+
+
     }
     
     // To send/recv (or scatter/gather) you will need to learn how to
@@ -118,9 +121,10 @@ int main(int argc, char** argv){
     // hint: because your nodes need to both send and receive you
     // might consider asyncronous send/recv.
 
+
     // YOUR CODE GOES HERE (distributing particles among processors)
     // each proccess gets $number$ particles starting at myRank*number
-    mpi_Scatter( globals,
+    MPI_Scatter( globals,
                  number * sizeof( struct Particle) / sizeof(float),
                  MPI_FLOAT,
                  locals,
@@ -130,6 +134,8 @@ int main(int argc, char** argv){
                  MPI_COMM_WORLD);
                 
     //END MY CODE
+
+
   } else {
     // random initialization of local particle array
     for(j = 0; j < number; j++){
@@ -156,8 +162,18 @@ int main(int argc, char** argv){
   
   // printing information on particles
   if(argc == 3){
+
     
     // YOUR CODE GOES HERE (collect particles at rank 0)
+    MPI_Gather( locals,
+                number * sizeof(struct Particle) / sizeof(float),
+                MPI_FLOAT,
+                globals,
+                number * sizeof(struct Particle) / sizeof(float),
+                0,
+                MPI_COMM_WORLD);
+    //END MY CODE
+
 
     if(myRank == 0) {
       print_particles(globals,n);
@@ -167,6 +183,7 @@ int main(int argc, char** argv){
 
   // finalizing MPI structures
   MPI_Finalize();
+  return 0;
 }
 
 // Function for random value generation
@@ -264,9 +281,9 @@ int read_file(struct Particle *set, int size, char *file_name){
     fprintf(stderr, "Can't open input file!\n");
     return 1;
   }
-
+  int i;
   // reading particle values
-  for(int i=0; i<size; i++){
+  for(i=0; i<size; i++){
     fscanf(ifp, "%f\t%f\t%f", &set[i].x, &set[i].y, &set[i].mass);
     set[i].fx = 0.0;
     set[i].fy = 0.0;

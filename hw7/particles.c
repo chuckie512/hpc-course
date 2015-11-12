@@ -171,7 +171,7 @@ int main(int argc, char** argv){
      if(recv_rank == -1)
        recv_rank = p-1;
     //recv
-    MPI_Barrier(MPI_COMM_WORLD);
+     MPI_Barrier(MPI_COMM_WORLD);
      MPI_Recv(remotes,
          number * (sizeof (struct Particle)) / sizeof(float),
          MPI_FLOAT,

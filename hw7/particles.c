@@ -179,7 +179,7 @@ int main(int argc, char** argv){
          0,
          MPI_COMM_WORLD,
          &status);   
-    printf("local x: %f remote: %f rank: %d\n",locals[0].x, remotes[0].x, myRank); 
+    // printf("local x: %f remote: %f rank: %d\n",locals[0].x, remotes[0].x, myRank); 
     //computer interact 
     compute_interaction(locals, remotes, number);    
   }
@@ -187,7 +187,7 @@ int main(int argc, char** argv){
    int orig_rank=myRank-((p-1)/2);
    if(orig_rank<0)
      orig_rank = p + orig_rank;
-   printf("sending back to orig: %d.  My rank: %d\n",orig_rank, myRank);
+   //printf("sending back to orig: %d.  My rank: %d\n",orig_rank, myRank);
    //send to orig
    MPI_Send(remotes,
           number * (sizeof (struct Particle)) / sizeof(float),
@@ -195,7 +195,7 @@ int main(int argc, char** argv){
           orig_rank,
           0,
           MPI_COMM_WORLD);
-   printf("sent: %d\n",myRank);
+   //printf("sent: %d\n",myRank);
    //recv orig
    MPI_Recv(remotes,
          number * (sizeof (struct Particle)) / sizeof(float),
@@ -204,9 +204,9 @@ int main(int argc, char** argv){
          0,
          MPI_COMM_WORLD,
          &status);
-   printf("recv'd: %d\n",myRank);
+   //printf("recv'd: %d\n",myRank);
    //merge
-   printf("local x: %f remote: %f rank: %d\n",locals[0].x, remotes[0].x, myRank);
+   //printf("local x: %f remote: %f rank: %d\n",locals[0].x, remotes[0].x, myRank);
    merge(locals, remotes, number);
    //compute self
    compute_self_interaction(locals, number);
@@ -224,7 +224,7 @@ int main(int argc, char** argv){
 
     
     // YOUR CODE GOES HERE (collect particles at rank 0)
-    printf("gathering: %d\n",myRank);
+    //printf("gathering: %d\n",myRank);
     MPI_Gather( locals,
                 number * sizeof(struct Particle) / sizeof(float),
                 MPI_FLOAT,
@@ -233,7 +233,7 @@ int main(int argc, char** argv){
                 MPI_FLOAT,
                 0,
                 MPI_COMM_WORLD);
-    printf("gathered: %d\n", myRank);
+    //printf("gathered: %d\n", myRank);
     //END MY CODE
 
 
@@ -244,7 +244,7 @@ int main(int argc, char** argv){
 
 
   // finalizing MPI structures
-  printf("finalizing: %d\n",myRank);
+  //printf("finalizing: %d\n",myRank);
   MPI_Finalize();
   return 0;
 }

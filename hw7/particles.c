@@ -2,7 +2,7 @@
  * University of Pittsburgh
  * Department of Computer Science
  * CS1645: Introduction to HPC Systems
- * Student: 
+ * Student: Charles Smith <cas275@pitt.edu> 
  * Instructor: Bryan Mills, University of Pittsburgh
  * MPI particle-interaction code. 
  */
@@ -153,7 +153,66 @@ int main(int argc, char** argv){
   }
   
   // YOUR CODE GOES HERE (ring algorithm)
-
+  int w;
+  for(w=0; w<number; w++){
+    remotes[w] = locals[w];
+  }
+  int k;
+  for(k =0; k< (p-1)/2; k++){
+    //send
+    MPI_Send(remotes,
+          number * (sizeof (struct Particle)) / sizeof(float),
+          MPI_FLOAT,
+          (myRank+1)%p,
+          0,
+          MPI_COMM_WORLD);
+                     
+     int recv_rank = myRank-1;
+     if(recv_rank == -1)
+       recv_rank = p-1;
+    //recv
+    MPI_Barrier(MPI_COMM_WORLD);
+     MPI_Recv(remotes,
+         number * (sizeof (struct Particle)) / sizeof(float),
+         MPI_FLOAT,
+         recv_rank,
+         0,
+         MPI_COMM_WORLD,
+         &status);   
+    printf("local x: %f remote: %f rank: %d\n",locals[0].x, remotes[0].x, myRank); 
+    //computer interact 
+    compute_interaction(locals, remotes, number);    
+  }
+   MPI_Barrier(MPI_COMM_WORLD); 
+   int orig_rank=myRank-((p-1)/2);
+   if(orig_rank<0)
+     orig_rank = p + orig_rank;
+   printf("sending back to orig: %d.  My rank: %d\n",orig_rank, myRank);
+   //send to orig
+   MPI_Send(remotes,
+          number * (sizeof (struct Particle)) / sizeof(float),
+          MPI_FLOAT,
+          orig_rank,
+          0,
+          MPI_COMM_WORLD);
+   printf("sent: %d\n",myRank);
+   //recv orig
+   MPI_Recv(remotes,
+         number * (sizeof (struct Particle)) / sizeof(float),
+         MPI_FLOAT,
+         (myRank+((p-1)/2))%p,
+         0,
+         MPI_COMM_WORLD,
+         &status);
+   printf("recv'd: %d\n",myRank);
+   //merge
+   printf("local x: %f remote: %f rank: %d\n",locals[0].x, remotes[0].x, myRank);
+   merge(locals, remotes, number);
+   //compute self
+   compute_self_interaction(locals, number);
+   //END MY CODE
+  
+  MPI_Barrier(MPI_COMM_WORLD);
   // stopping timer
   if(myRank == 0){
     end_time = MPI_Wtime();
@@ -165,13 +224,16 @@ int main(int argc, char** argv){
 
     
     // YOUR CODE GOES HERE (collect particles at rank 0)
+    printf("gathering: %d\n",myRank);
     MPI_Gather( locals,
                 number * sizeof(struct Particle) / sizeof(float),
                 MPI_FLOAT,
                 globals,
                 number * sizeof(struct Particle) / sizeof(float),
+                MPI_FLOAT,
                 0,
                 MPI_COMM_WORLD);
+    printf("gathered: %d\n", myRank);
     //END MY CODE
 
 
@@ -182,6 +244,7 @@ int main(int argc, char** argv){
 
 
   // finalizing MPI structures
+  printf("finalizing: %d\n",myRank);
   MPI_Finalize();
   return 0;
 }

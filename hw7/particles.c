@@ -192,12 +192,13 @@ int main(int argc, char** argv){
      orig_rank = p + orig_rank;
    printf("sending back to orig: %d.  My rank: %d\n",orig_rank, myRank);
    //send to orig
-   MPI_Send(remotes,
+   MPI_Isend(remotes,
           number * (sizeof (struct Particle)) / sizeof(float),
           MPI_FLOAT,
           orig_rank,
           0,
-          MPI_COMM_WORLD);
+          MPI_COMM_WORLD,
+          &request);
    printf("sent: %d\n",myRank);
    //recv orig
    MPI_Recv(remotes,

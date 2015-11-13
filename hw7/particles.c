@@ -157,22 +157,24 @@ int main(int argc, char** argv){
   for(w=0; w<number; w++){
     remotes[w] = locals[w];
   }
+  MPI_Request request;
   int k;
   for(k =0; k< (p-1)/2; k++){
     printf("loop %d proccess %d\n",k, myRank);
     //send
-    MPI_Send(remotes,
+    MPI_Isend(remotes,
           number * (sizeof (struct Particle)) / sizeof(float),
           MPI_FLOAT,
           (myRank+1)%p,
           0,
-          MPI_COMM_WORLD);
+          MPI_COMM_WORLD,
+          &request);
                      
      int recv_rank = myRank-1;
      if(recv_rank == -1)
        recv_rank = p-1;
     //recv
-     MPI_Barrier(MPI_COMM_WORLD);
+     //MPI_Barrier(MPI_COMM_WORLD);
      MPI_Recv(remotes,
          number * (sizeof (struct Particle)) / sizeof(float),
          MPI_FLOAT,

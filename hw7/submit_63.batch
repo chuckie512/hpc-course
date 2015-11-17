@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -J particles        # Job Name
-#SBATCH -o particles.o%j    # Output and error file name (%j expands to jobID)
-#SBATCH -n 64              # Total number of mpi tasks requested
+#SBATCH -o particles-63.o%j    # Output and error file name (%j expands to jobID)
+#SBATCH -n 63              # Total number of mpi tasks requested
 #SBATCH -p normal          # Queue (partition) name -- normal, development, etc.
 #SBATCH -t 00:05:00        # Run time (hh:mm:ss) - 5 minutes
 #SBATCH -A TG-CCR150026

@@ -22,6 +22,33 @@ __global__ void scan_simple(float *g_odata, float *g_idata, int n) {
 
   // STUDENT: YOUR CODE GOES HERE.
   g_odata[threadIdx.x] = 0.0;
+ 
+  int pin=1, pout=0; //keep track of where in the temp array we are.  0 for first half, 1 for second
+   
+  if(threadIdx.x<511)
+    temp[threadIdx.x+1] = g_idata[threadIdx.x];
+
+
+  int offset; //how far away we're adding from
+  for(offset=1; offset<n; offset*=2){
+
+    //swap the buffers
+    pin  =1 - pin ;
+    pout =1 - pout;
+
+    //in general we try to avoid branching on GPUs as it is a giant decrease to preformance
+    //but there's not to many ways around this one
+    if(threadIdx.x>=offset)//we have work to do!
+      temp[pout*n+threadIdx.x] = temp[pin*n+threadIdx.x] + temp[pin*n+threadIdx.x - offset];  //sum
+    else //we already found the answer, let's keep track of it
+      temp[pout*n+threadIdx.x] = temp[pin*n+threadIdx.x];
+
+    __syncthreads(); //don't want to do work before everyone is ready
+
+  }
+  //great! we have the answer! (i think...) let's copy it to the output buffer
+
+  g_odata[threadIdx.x] = temp[pout*n+threadIdx.x];
 
 }
 
@@ -120,6 +147,10 @@ int main(void) {
 
   if (printError(gold_out, out, false)) {
     printf("ERROR: The simple scan function failed to produce proper output.\n");
+    //printf("produced output:\n");
+    //for(int i=0; i<512; i++){
+    //  printf("%d: %f\n",i, out[i]);
+    //}
   } else {
     printf("CONGRATS: The simple scan function produced proper output.\n");
   }

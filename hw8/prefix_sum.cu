@@ -5,6 +5,8 @@
  * Instructor Bryan Mills, PhD
  * This is a skeleton for implementing prefix sum using GPU, inspired
  * by nvidia course of similar name.
+ * 
+ * student: Charles Smith <cas275@pitt.edu>
  */
 
 #include <stdio.h>
@@ -59,7 +61,34 @@ __global__ void prescan(float *g_odata, float *g_idata, int n) {
   extern  __shared__  float temp[];  
 
   // STUDENT: YOUR CODE GOES HERE.
+  temp[threadIdx.x] = g_idata[threadIdx.x];
 
+  int offset = 1; //how far to move the data
+  //upsweep
+  __syncthreads();//get everyone together
+  for(; offset<n; offset*=2){
+    if((threadIdx.x+1)%(offset*2))
+      temp[threadIdx.x] += temp[threadIdx.x-offset];
+    __syncthreads();
+  }
+  
+  if(threadIdx.x==0)
+    temp[n-1] = 0;  //clear the last entry
+
+  offset/=2;
+  __syncthreads();
+
+  //downsweep
+  for(; offset>=1;offset/=2){
+    if((threadIdx.x+1)%(offset*2)){
+      float t = temp[threadIdx.x-offset];
+      temp[threadIdx.x-offset] = temp[threadIdx.x];
+      temp[threadIdx.x]+=t;
+    
+    }
+  }
+
+  g_odata[threadIdx.x]=temp[threadIdx.x];
 }
 
 /*
@@ -145,7 +174,7 @@ int main(void) {
   cudaMemcpy(out, d_out, size, cudaMemcpyDeviceToHost);
   printf("TIME: Copy back %d ms\n",  timerStop());
 
-  if (printError(gold_out, out, false)) {
+  if (printError(gold_out, out, true)) {
     printf("ERROR: The simple scan function failed to produce proper output.\n");
     //printf("produced output:\n");
     //for(int i=0; i<512; i++){
@@ -168,7 +197,7 @@ int main(void) {
   cudaMemcpy(out, d_out, size, cudaMemcpyDeviceToHost);
   printf("TIME: Copy back %d ms\n",  timerStop());
 
-  if (printError(gold_out, out, false)) {
+  if (printError(gold_out, out, true)) {
     printf("ERROR: The prescan function failed to produce proper output.\n");
   } else {
     printf("CONGRATS: The prescan function produced proper output.\n");

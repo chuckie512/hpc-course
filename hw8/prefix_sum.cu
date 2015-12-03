@@ -60,35 +60,81 @@ __global__ void scan_simple(float *g_odata, float *g_idata, int n) {
 __global__ void prescan(float *g_odata, float *g_idata, int n) {
   extern  __shared__  float temp[];  
 
-  // STUDENT: YOUR CODE GOES HERE.
-  temp[threadIdx.x] = g_idata[threadIdx.x];
+//to many headaches working on this.... I looked at the linked code and started fresh.
 
-  int offset = 1; //how far to move the data
-  //upsweep
-  __syncthreads();//get everyone together
-  for(; offset<n; offset*=2){
-    if((threadIdx.x+1)%(offset*2))
-      temp[threadIdx.x] += temp[threadIdx.x-offset];
+//  g_odata[threadIdx.x] = g_idata[threadIdx.x];
+//  
+//  // STUDENT: YOUR CODE GOES HERE.
+//    temp[threadIdx.x] = g_idata[threadIdx.x];
+//
+//  int offset = 1; //how far to move the data
+//  //upsweep
+//  __syncthreads();//get everyone together
+//  for(; offset<n; offset*=2){
+//    if(!(threadIdx.x+1)%(offset*2))
+//      temp[threadIdx.x] += temp[threadIdx.x-offset];
+//    __syncthreads();
+//    printf("offset = %d, temp = %f, threadIdx.x = %d\n",offset, temp[threadIdx.x], threadIdx.x);
+//  }
+//  
+//  if(threadIdx.x==0)
+//    temp[n-1] = 0;  //clear the last entry
+//
+//  offset/=2;
+//  __syncthreads();
+//
+//  //downsweep
+//  for(; offset>=1;offset/=2){
+//    if(!(threadIdx.x+1)%(offset*2)){
+//      //swaps
+//      float t = temp[threadIdx.x-offset];
+//      temp[threadIdx.x-offset] = temp[threadIdx.x];
+//      temp[threadIdx.x]+=t;
+//    
+//    }
+//    __syncthreads();
+//    printf("offset = %d, temp = %f, threadIdx.x = %d\n",offset, temp[threadIdx.x], threadIdx.x);
+//    __syncthreads();
+//  }
+//  printf("temp[%d] = %f\n", threadIdx.x, temp[threadIdx.x]); 
+//  g_odata[threadIdx.x]=temp[threadIdx.x];
+//  printf("g_odata[%d] = %f\n", threadIdx.x, g_odata[threadIdx.x]);
+
+
+  int offset = 1;
+  temp[2*threadIdx.x] = g_idata[2*threadIdx.x]; 
+  temp[2*threadIdx.x+1] = g_idata[2*threadIdx.x+1];
+  for(int i = n/2; i > 0; i/=2){ 
+  
+    __syncthreads();
+    if(threadIdx.x < i) {
+      int ai = offset*(2*threadIdx.x+1)-1;
+      int bi = offset*(2*threadIdx.x+2)-1;
+      temp[bi] += temp[ai]; 
+    }
+    offset *= 2;
+  }
+  if(threadIdx.x == 0) { 
+    temp[n - 1] = 0; 
+  } 
+  for(int i = 1; i < n; i *= 2) {
+    offset /= 2;
+    __syncthreads();
+    if(threadIdx.x < i){
+      int ai = offset*(2*threadIdx.x+1)-1;
+      int bi = offset*(2*threadIdx.x+2)-1;
+      float t = temp[ai];
+      temp[ai] = temp[bi];
+      temp[bi] += t;
+    }
     __syncthreads();
   }
-  
-  if(threadIdx.x==0)
-    temp[n-1] = 0;  //clear the last entry
-
-  offset/=2;
   __syncthreads();
+  //HEY LOOK IT COPIES THIS TIME AHHHHHHHHH
+  g_odata[2*threadIdx.x] = temp[2*threadIdx.x]; 
+  g_odata[2*threadIdx.x+1] = temp[2*threadIdx.x+1]; 
 
-  //downsweep
-  for(; offset>=1;offset/=2){
-    if((threadIdx.x+1)%(offset*2)){
-      float t = temp[threadIdx.x-offset];
-      temp[threadIdx.x-offset] = temp[threadIdx.x];
-      temp[threadIdx.x]+=t;
-    
-    }
-  }
 
-  g_odata[threadIdx.x]=temp[threadIdx.x];
 }
 
 /*
@@ -183,7 +229,9 @@ int main(void) {
   } else {
     printf("CONGRATS: The simple scan function produced proper output.\n");
   }
-
+  
+  out[0]=-2;
+  out[1]=-2;
   // ***********
   // RUN PRESCAN
   // note size change in number of threads, only need 256 because each

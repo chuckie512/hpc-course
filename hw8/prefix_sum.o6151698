@@ -1,0 +1,9 @@
+TIME: Init took 1592038 ms
+TIME: Serial took 3 ms
+TIME: Copy took 964 ms
+TIME: Simple kernel took 1118 ms
+TIME: Copy back 18 ms
+CONGRATS: The simple scan function produced proper output.
+TIME: Prescan kernel took 32 ms
+TIME: Copy back 13 ms
+CONGRATS: The prescan function produced proper output.
